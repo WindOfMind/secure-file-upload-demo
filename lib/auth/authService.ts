@@ -1,8 +1,6 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import sessionTable from "./sessionTable";
-import userService from "../user/userService";
-import { User } from "../user/userTable";
 
 const ALGORITHM = "aes-256-cbc";
 const SECRET =

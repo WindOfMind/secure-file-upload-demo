@@ -37,10 +37,10 @@ export class UserService {
             type: UserType.STAFF,
         });
     }
-    async verifyPassword(
+    async tryGetUserId(
         username: string,
         password: string,
-    ): Promise<User | null> {
+    ): Promise<number | null> {
         const user = await this.userTable.findByUsername(username);
         if (!user || !user.password) {
             return null;
@@ -51,9 +51,7 @@ export class UserService {
             return null;
         }
 
-        // Return user without password/salt for safety
-        const { password: _, salt: __, ...userWithoutSecrets } = user;
-        return userWithoutSecrets;
+        return user.id;
     }
 }
 

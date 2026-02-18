@@ -28,13 +28,13 @@ export async function loginAction(prevState: any, formData: FormData) {
     }
 
     try {
-        const user = await userService.verifyPassword(username, password);
+        const userId = await userService.tryGetUserId(username, password);
 
-        if (!user) {
+        if (userId === null) {
             return { error: "Invalid username or password" };
         }
 
-        const encryptedSessionId = await authService.createSession(user.id);
+        const encryptedSessionId = await authService.createSession(userId);
 
         const cookieStore = await cookies();
         cookieStore.set("session", encryptedSessionId, {
