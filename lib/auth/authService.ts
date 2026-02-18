@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import crypto from "crypto";
 import sessionTable from "./sessionTable";
 import userService from "../user/userService";
@@ -62,6 +63,22 @@ export class AuthService {
             console.error("Session validation error:", error);
             return null;
         }
+    }
+
+    async logout(): Promise<void> {
+        const cookieStore = await cookies();
+        const encryptedSessionId = cookieStore.get("session")?.value;
+
+        if (encryptedSessionId) {
+            try {
+                const sessionId = this.decrypt(encryptedSessionId);
+                await sessionTable.delete(sessionId);
+            } catch (error) {
+                console.error("Logout error (session deletion):", error);
+            }
+        }
+
+        cookieStore.delete("session");
     }
 }
 

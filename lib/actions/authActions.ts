@@ -52,6 +52,11 @@ export async function loginAction(prevState: any, formData: FormData) {
     redirect("/files");
 }
 
+export async function logoutAction() {
+    await authService.logout();
+    redirect("/");
+}
+
 export async function signupAction(prevState: any, formData: FormData) {
     const name = formData.get("name") as string;
     const username = formData.get("username") as string;

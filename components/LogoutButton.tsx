@@ -1,21 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { logoutAction } from "@/lib/actions/authActions";
 
 export default function LogoutButton() {
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const handleLogout = async () => {
         setLoading(true);
         try {
-            await fetch("/api/user/logout", { method: "POST" });
-            router.push("/");
-            router.refresh();
+            await logoutAction();
         } catch (error) {
             console.error("Logout failed:", error);
-        } finally {
             setLoading(false);
         }
     };
