@@ -42,6 +42,27 @@ export class AuthService {
         await sessionTable.insert(sessionId, userId, expiresAt);
         return this.encrypt(sessionId);
     }
+
+    async validateSession(encryptedSessionId: string): Promise<number | null> {
+        try {
+            const sessionId = this.decrypt(encryptedSessionId);
+            const session = await sessionTable.findById(sessionId);
+
+            if (!session) {
+                return null;
+            }
+
+            if (new Date() > new Date(session.expiresAt)) {
+                await sessionTable.delete(sessionId);
+                return null;
+            }
+
+            return session.userId;
+        } catch (error) {
+            console.error("Session validation error:", error);
+            return null;
+        }
+    }
 }
 
 const authService = new AuthService();
