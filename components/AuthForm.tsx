@@ -1,55 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState, useState, useEffect } from "react";
+import { loginAction, signupAction } from "@/lib/actions/authActions";
 
 export default function AuthForm() {
     const [isLogin, setIsLogin] = useState(true);
-    const [name, setName] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
+    const [loginState, loginFormAction, loginPending] = useActionState(
+        loginAction,
+        null,
+    );
+    const [signupState, signupFormAction, signupPending] = useActionState(
+        signupAction,
+        null,
+    );
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
+    const error = isLogin ? loginState?.error : signupState?.error;
+    const success = !isLogin && signupState?.success;
+    const loading = isLogin ? loginPending : signupPending;
 
-        const endpoint = isLogin ? "/api/user/login" : "/api/user/signup";
-        const body = isLogin
-            ? { username, password }
-            : { name, username, password };
-
-        try {
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "An error occurred");
-                setLoading(false);
-                return;
-            }
-
-            if (isLogin) {
-                router.push("/files");
-            } else {
-                // After signup, switch to login
-                setIsLogin(true);
-                setError("Account created! Please log in.");
-                setLoading(false);
-            }
-        } catch (err) {
-            setError("Failed to connect to the server");
-            setLoading(false);
+    useEffect(() => {
+        if (signupState?.success) {
+            setIsLogin(true);
         }
-    };
+    }, [signupState]);
 
     return (
         <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800">
@@ -64,7 +37,10 @@ export default function AuthForm() {
                 </p>
             </div>
 
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <form
+                className="mt-8 space-y-6"
+                action={isLogin ? loginFormAction : signupFormAction}
+            >
                 <div className="space-y-4 rounded-md shadow-sm">
                     {!isLogin && (
                         <div>
@@ -79,8 +55,6 @@ export default function AuthForm() {
                                 name="name"
                                 type="text"
                                 required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
                                 className="mt-1 block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 bg-transparent dark:text-white"
                             />
                         </div>
@@ -97,8 +71,6 @@ export default function AuthForm() {
                             name="username"
                             type="text"
                             required
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
                             className="mt-1 block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 bg-transparent dark:text-white"
                         />
                     </div>
@@ -116,18 +88,20 @@ export default function AuthForm() {
                             type="password"
                             autoComplete="current-password"
                             required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             className="mt-1 block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 bg-transparent dark:text-white"
                         />
                     </div>
                 </div>
 
                 {error && (
-                    <div
-                        className={`p-3 text-sm rounded-md ${error.includes("Account created") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-                    >
+                    <div className="p-3 text-sm rounded-md bg-red-100 text-red-700">
                         {error}
+                    </div>
+                )}
+
+                {signupState?.message && (
+                    <div className="p-3 text-sm rounded-md bg-green-100 text-green-700">
+                        {signupState.message}
                     </div>
                 )}
 
@@ -150,7 +124,6 @@ export default function AuthForm() {
                 <button
                     onClick={() => {
                         setIsLogin(!isLogin);
-                        setError("");
                     }}
                     className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
                 >
