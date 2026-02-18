@@ -6,3 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
   salt TEXT,
   type TEXT NOT NULL CHECK (type IN ('admin', 'staff'))
 );
+
+CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);

@@ -10,6 +10,8 @@ export interface User {
     name: string;
     username: string;
     type: UserType;
+    password?: string;
+    salt?: string;
 }
 
 export interface CreateUserParams {
@@ -26,7 +28,7 @@ export class UserTable {
     async findByUsername(username: string): Promise<User | null> {
         return this.db.execute(async (client) => {
             const result = await client.query(
-                "SELECT id FROM users WHERE username = $1",
+                "SELECT id, name, username, type, password, salt FROM users WHERE username = $1",
                 [username],
             );
             return result.rows[0] ?? null;

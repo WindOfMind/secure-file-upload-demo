@@ -37,6 +37,24 @@ export class UserService {
             type: UserType.STAFF,
         });
     }
+    async verifyPassword(
+        username: string,
+        password: string,
+    ): Promise<User | null> {
+        const user = await this.userTable.findByUsername(username);
+        if (!user || !user.password) {
+            return null;
+        }
+
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            return null;
+        }
+
+        // Return user without password/salt for safety
+        const { password: _, salt: __, ...userWithoutSecrets } = user;
+        return userWithoutSecrets;
+    }
 }
 
 const userService = new UserService(db);
