@@ -147,7 +147,7 @@ export default async function FilesTable({ userId }: { userId: number }) {
                             </td>
                             <td className="px-6 py-4 text-right">
                                 <a
-                                    href={`/api/files/${file.path}`}
+                                    href={`/api/files/${file.id}`}
                                     className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition-colors"
                                     target="_blank"
                                     rel="noopener noreferrer"
