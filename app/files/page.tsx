@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import authService from "@/lib/auth/authService";
 import LogoutButton from "@/components/LogoutButton";
+import FileUpload from "@/components/FileUpload";
+import FilesTable from "@/components/FilesTable";
 
 export default async function FilesPage() {
     const cookieStore = await cookies();
@@ -25,21 +27,22 @@ export default async function FilesPage() {
                 <LogoutButton />
             </header>
 
-            <main className="flex flex-1 flex-col items-center justify-center p-24">
-                <div className="w-full max-w-3xl space-y-8 text-center">
-                    <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        Your Files
-                    </h1>
-                    <p className="text-lg text-zinc-600 dark:text-zinc-400">
-                        This is your secure file storage. Start uploading your
-                        important documents.
-                    </p>
-                    <div className="mt-8 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 p-20 bg-white dark:bg-zinc-900 shadow-sm">
-                        <p className="text-zinc-500 dark:text-zinc-500 italic">
-                            Empty for now. Implementation of file list coming
-                            soon...
+            <main className="flex-1 w-full max-w-6xl mx-auto p-8 space-y-12">
+                <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                            Your Files
+                        </h1>
+                        <p className="text-lg text-zinc-600 dark:text-zinc-400">
+                            Manage and access your secure documents.
                         </p>
                     </div>
+
+                    <FileUpload />
+                </header>
+
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                    <FilesTable userId={userId} />
                 </div>
             </main>
         </div>
