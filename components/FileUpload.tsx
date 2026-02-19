@@ -11,7 +11,7 @@ export default function FileUpload() {
     } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpload = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const file = formData.get("file") as File;
